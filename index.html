@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta Técnica e Comercial — Sistema de Visão Computacional</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+  :root {
+    --ink: #0f1420;
+    --ink-light: #3a4257;
+    --ink-muted: #6b7590;
+    --paper: #f8f7f4;
+    --paper-warm: #f2f0ec;
+    --paper-dark: #e8e5df;
+    --accent: #1a3a6b;
+    --accent-mid: #2d5fa8;
+    --accent-light: #4a82d4;
+    --accent-glow: rgba(45,95,168,0.12);
+    --amber: #c8800a;
+    --amber-light: #f5a623;
+    --amber-bg: #fdf4e3;
+    --green: #1a6b45;
+    --green-light: #2ea86c;
+    --green-bg: #e8f7f1;
+    --red: #7a1a1a;
+    --red-light: #c0392b;
+    --red-bg: #fdf0f0;
+    --rule: rgba(15,20,32,0.1);
+    --shadow-sm: 0 1px 4px rgba(15,20,32,0.08);
+    --shadow-md: 0 4px 20px rgba(15,20,32,0.10);
+    --shadow-lg: 0 12px 48px rgba(15,20,32,0.13);
+    --radius: 6px;
+    --radius-lg: 12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PRINT WRAPPER ── */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--accent);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 110% 10%, rgba(74,130,212,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at -10% 90%, rgba(26,58,107,0.8) 0%, transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 64px 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.08);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -140px; right: -140px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .cover-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .cover-doc-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.35);
+    text-align: right;
+  }
+
+  .cover-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 0 60px;
+  }
+
+  .cover-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    width: fit-content;
+    margin-bottom: 32px;
+  }
+
+  .cover-tag-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .cover-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 52px;
+    line-height: 1.1;
+    color: #fff;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+
+  .cover-title em {
+    font-style: italic;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .cover-subtitle {
+    font-size: 17px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .cover-field {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 16px;
+  }
+
+  .cover-field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 6px;
+  }
+
+  .cover-field-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 72px 72px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-mid);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 32px;
+    letter-spacing: -0.3px;
+  }
+
+  h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: -0.1px;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  p {
+    color: var(--ink-light);
+    margin-bottom: 14px;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ── EXECUTIVE SUMMARY ── */
+  .exec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .exec-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+
+  .exec-card h3 { font-size: 13px; margin-bottom: 10px; }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: var(--accent-glow);
+    border: 1px solid rgba(45,95,168,0.2);
+    border-left: 3px solid var(--accent-mid);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+
+  .highlight-box p { color: var(--ink-light); margin: 0; }
+
+  .warning-box {
+    background: var(--amber-bg);
+    border: 1px solid rgba(200,128,10,0.25);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+
+  .warning-box p { color: #6b4800; margin: 0; }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 40px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .flow-step {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 22px;
+    right: -1px;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent-light), var(--paper-dark));
+    z-index: 0;
+  }
+
+  .flow-step:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: -1px;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(to right, var(--paper-dark), var(--accent-light));
+    z-index: 0;
+  }
+
+  .flow-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .flow-num {
+    position: absolute;
+    top: -5px; right: -5px;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    color: var(--ink);
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flow-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .flow-desc {
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+
+  /* ── FEATURES LIST ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .feature-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feature-text h4 { margin-bottom: 3px; font-size: 12px; }
+  .feature-text p { font-size: 12.5px; color: var(--ink-muted); margin: 0; }
+
+  /* ── ARCHITECTURE COMPARE ── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 28px 0;
+  }
+
+  .arch-card {
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .arch-card-header {
+    padding: 18px 22px;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arch-card-header.local { background: #e8f0fc; color: var(--accent); }
+  .arch-card-header.cloud { background: #e8f4fd; color: #1a6080; }
+  .arch-card-header.hybrid { background: var(--green-bg); color: var(--green); }
+  .arch-card-header.ecs { background: #f0eafc; color: #4a1a80; }
+
+  .arch-card-body { padding: 18px 22px; background: var(--paper-warm); }
+
+  .arch-pro, .arch-con {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12.5px;
+    margin-bottom: 6px;
+    color: var(--ink-light);
+  }
+
+  .arch-pro::before { content: '✓'; color: var(--green-light); font-weight: 700; flex-shrink: 0; }
+  .arch-con::before { content: '×'; color: var(--red-light); font-weight: 700; flex-shrink: 0; }
+
+  /* ── RECOMMENDATION ── */
+  .recommendation {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-mid) 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    color: #fff;
+    margin: 28px 0;
+  }
+
+  .recommendation h3 {
+    color: #fff;
+    font-size: 18px;
+    font-family: 'DM Serif Display', serif;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  .recommendation p { color: rgba(255,255,255,0.82); margin-bottom: 10px; }
+
+  /* ── PHASES ── */
+  .phase {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0;
+    margin-bottom: 0;
+    position: relative;
+  }
+
+  .phase:not(:last-child) .phase-line {
+    position: absolute;
+    left: 39px;
+    top: 80px;
+    bottom: 0;
+    width: 2px;
+    background: var(--paper-dark);
+  }
+
+  .phase-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .phase-badge {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+    z-index: 1;
+    position: relative;
+  }
+
+  .phase-content {
+    padding: 4px 0 40px 28px;
+  }
+
+  .phase-content h3 { font-size: 15px; margin-bottom: 6px; }
+
+  .phase-duration {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent-mid);
+    background: var(--accent-glow);
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin-bottom: 12px;
+  }
+
+  .deliverables {
+    list-style: none;
+  }
+
+  .deliverables li {
+    font-size: 13px;
+    color: var(--ink-light);
+    padding: 4px 0;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .deliverables li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-light);
+    font-size: 11px;
+  }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 20px 0;
+  }
+
+  thead tr {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--paper-dark); }
+  tbody tr:hover { background: var(--paper-warm); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 12px 16px;
+    color: var(--ink-light);
+    vertical-align: top;
+  }
+
+  .table-wrap {
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── INVESTMENT ── */
+  .invest-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 28px 0;
+  }
+
+  .invest-card {
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .invest-card-top {
+    padding: 20px 22px 14px;
+    border-bottom: 1px solid var(--paper-dark);
+    background: var(--paper-warm);
+  }
+
+  .invest-card h4 { text-transform: none; font-size: 13px; letter-spacing: 0; color: var(--ink); }
+
+  .invest-card-body { padding: 20px 22px; }
+
+  .invest-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .invest-note { font-size: 11.5px; color: var(--ink-muted); }
+
+  /* ── RISKS ── */
+  .risk-list {
+    list-style: none;
+    margin-top: 20px;
+  }
+
+  .risk-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .risk-item:last-child { border-bottom: none; }
+
+  .risk-badge {
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 2px;
+  }
+
+  .risk-badge.med { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(200,128,10,0.3); }
+  .risk-badge.high { background: var(--red-bg); color: var(--red-light); border: 1px solid rgba(192,57,43,0.3); }
+  .risk-badge.low { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46,168,108,0.3); }
+
+  .risk-text h4 { font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--ink); margin-bottom: 3px; }
+  .risk-text p { font-size: 12.5px; color: var(--ink-muted); margin: 0; }
+
+  /* ── BENEFITS ── */
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .benefit-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .benefit-icon { font-size: 28px; margin-bottom: 12px; }
+  .benefit-card h4 { font-size: 12px; color: var(--ink); margin-bottom: 6px; }
+  .benefit-card p { font-size: 12px; color: var(--ink-muted); margin: 0; }
+
+  /* ── SCHEDULE ── */
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    align-items: center;
+    padding: 12px 0;
+    gap: 20px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+
+  .schedule-row:last-child { border-bottom: none; }
+
+  .schedule-phase-name { font-weight: 500; color: var(--ink); }
+  .schedule-bar-wrap { height: 8px; background: var(--paper-dark); border-radius: 4px; overflow: hidden; }
+  .schedule-bar { height: 100%; border-radius: 4px; background: linear-gradient(to right, var(--accent), var(--accent-light)); }
+  .schedule-duration { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-muted); text-align: right; }
+
+  /* ── NEXT STEPS ── */
+  .steps-list {
+    counter-reset: steps;
+    list-style: none;
+    margin-top: 24px;
+  }
+
+  .steps-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .steps-list li:last-child { border-bottom: none; }
+
+  .steps-list li::before {
+    content: counter(steps, decimal-leading-zero);
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--accent-mid);
+    flex-shrink: 0;
+    line-height: 1.3;
+  }
+
+  .step-content h4 { font-size: 14px; font-weight: 600; color: var(--ink); text-transform: none; letter-spacing: 0; margin-bottom: 4px; }
+  .step-content p { font-size: 13px; color: var(--ink-muted); margin: 0; }
+
+  /* ── CONDITIONS ── */
+  .conditions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .condition-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 20px;
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+  }
+
+  .condition-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .condition-value { font-size: 14px; font-weight: 500; color: var(--ink); }
+
+  /* ── OUT-OF-SCOPE ── */
+  .oos-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .oos-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--ink-light);
+    padding: 12px 14px;
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+  }
+
+  .oos-item::before {
+    content: '—';
+    color: var(--ink-muted);
+    flex-shrink: 0;
+    font-weight: 300;
+  }
+
+  /* ── DATA SAMPLE ── */
+  .data-sample {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin: 28px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .data-sample .ds-title {
+    color: var(--amber-light);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 9px;
+    margin-bottom: 16px;
+  }
+
+  .data-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 4px 0; }
+  .data-row:last-child { border-bottom: none; }
+  .data-key { color: rgba(255,255,255,0.45); }
+  .data-val { color: #fff; font-weight: 500; }
+  .data-val.good { color: #4ade80; }
+  .data-val.bad { color: #f87171; }
+  .data-val.warn { color: var(--amber-light); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.6);
+    padding: 56px 72px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .footer-tagline {
+    font-size: 13px;
+    margin-bottom: 36px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .footer-divider {
+    width: 40px;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    margin: 28px auto;
+  }
+
+  .footer-closing {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    max-width: 520px;
+    margin: 0 auto 28px;
+    line-height: 1.5;
+  }
+
+  .footer-contact {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ── PREMISSAS ── */
+  .premissa-list {
+    list-style: none;
+    columns: 2;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .premissa-list li {
+    break-inside: avoid;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--ink-light);
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--rule);
+  }
+
+  .premissa-list li::before {
+    content: '◇';
+    color: var(--accent-light);
+    font-size: 10px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── AI SECTION ── */
+  .ai-factors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+  }
+
+  .ai-factor {
+    padding: 20px;
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .ai-factor-icon { font-size: 26px; margin-bottom: 10px; }
+  .ai-factor h4 { font-size: 12px; color: var(--ink); margin-bottom: 5px; text-transform: none; letter-spacing: 0; }
+  .ai-factor p { font-size: 11.5px; color: var(--ink-muted); margin: 0; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .cover { padding: 40px 32px; }
+    section { padding: 52px 32px; }
+    .cover-title { font-size: 36px; }
+    .exec-grid, .arch-grid, .feature-grid, .benefit-grid, .invest-cards,
+    .ai-factors, .oos-list, .conditions-grid, .premissa-list { grid-template-columns: 1fr; columns: 1; }
+    .flow { flex-direction: column; }
+    .flow-step::after, .flow-step::before { display: none; }
+    .phase { grid-template-columns: 60px 1fr; }
+    .schedule-row { grid-template-columns: 1fr 1fr; }
+    .footer { padding: 40px 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════ CAPA ══════════════════════════════ -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-label">Proposta Técnica &amp; Comercial</div>
+    <div class="cover-doc-id">Ref. [PROPOSTA-VC-001]<br>24 de março de 2025</div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-tag">
+      <span class="cover-tag-dot"></span>
+      Inspeção Visual Automatizada · Indústria 4.0
+    </div>
+    <h1 class="cover-title">Sistema de <em>Visão<br>Computacional</em><br>para Controle de<br>Qualidade</h1>
+    <p class="cover-subtitle">Automatização da inspeção de blocos de concreto com inteligência artificial, notificações em tempo real e rastreabilidade operacional completa.</p>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-field">
+      <div class="cover-field-label">Preparado para</div>
+      <div class="cover-field-value">[NOME DO CLIENTE]</div>
+    </div>
+    <div class="cover-field">
+      <div class="cover-field-label">Preparado por</div>
+      <div class="cover-field-value">Galtec<br><span style="font-size:13px;font-weight:400;opacity:.7;">Júlio Reis</span></div>
+    </div>
+    <div class="cover-field">
+      <div class="cover-field-label">Data de emissão</div>
+      <div class="cover-field-value">24 de março de 2025</div>
+    </div>
+    <div class="cover-field">
+      <div class="cover-field-label">Validade da proposta</div>
+      <div class="cover-field-value">30 dias corridos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ RESUMO EXECUTIVO ══════════════════════════════ -->
+<section>
+  <div class="section-label">01 — Visão Geral</div>
+  <h2>Resumo Executivo</h2>
+
+  <p>Processos de inspeção visual manual em linhas de produção de blocos de concreto são lentos, subjetivos e dependentes do estado de atenção do operador em cada turno. Pequenas variações de qualidade — trincas superficiais, irregularidades dimensionais, texturas fora do padrão — passam despercebidas e comprometem lotes inteiros ou chegam ao cliente sem rastreabilidade.</p>
+
+  <p>Esta proposta apresenta um sistema de <strong>Visão Computacional com Inteligência Artificial</strong> que automatiza essa inspeção: câmeras registram cada peça produzida, imagens são processadas por um modelo de IA treinado para classificar conformidade, e os resultados são armazenados com histórico completo, exibidos em dashboard em tempo real e comunicados via WhatsApp quando anomalias são detectadas.</p>
+
+  <div class="exec-grid">
+    <div class="exec-card">
+      <h3>🏭 O Problema</h3>
+      <p>Inspeção manual gera inconsistência entre turnos, sem histórico rastreável, sem resposta imediata a defeitos e sem dados operacionais confiáveis por período.</p>
+    </div>
+    <div class="exec-card">
+      <h3>🤖 A Solução</h3>
+      <p>Sistema integrado de captura + análise por IA + registro + alertas + relatórios, operando 24h com rastreabilidade completa por máquina, turno e período.</p>
+    </div>
+    <div class="exec-card">
+      <h3>📊 Benefícios Operacionais</h3>
+      <p>Redução de peças não conformes liberadas, resposta imediata a falhas de processo, indicadores de eficiência por turno, histórico para auditoria.</p>
+    </div>
+    <div class="exec-card">
+      <h3>🛤️ Abordagem por Fases</h3>
+      <p>O projeto começa com descoberta técnica e prova de conceito, avançando de forma validada. Sem promessas de precisão absoluta antes de evidência real.</p>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>Postura técnica desta proposta:</strong> Visão computacional é uma tecnologia com excelente potencial para este caso de uso, mas a qualidade do resultado final depende diretamente da qualidade das imagens coletadas, da clareza na definição de defeitos e do volume de amostras disponíveis para treinamento. Por isso, esta proposta estrutura o projeto em fases progressivas, com validação em campo antes de qualquer escalonamento.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ OBJETIVO ══════════════════════════════ -->
+<section>
+  <div class="section-label">02 — Propósito</div>
+  <h2>Objetivo do Projeto</h2>
+
+  <p>O objetivo central é substituir ou complementar a inspeção visual humana por um sistema automatizado, confiável e rastreável. Especificamente, o projeto visa:</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <span class="feature-icon">🔍</span>
+      <div class="feature-text">
+        <h4>Inspeção visual automatizada</h4>
+        <p>Analisar cada bloco ou placa produzida logo após a saída da máquina, sem depender da atenção do operador.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-text">
+        <h4>Alerta em tempo real</h4>
+        <p>Notificar imediatamente via WhatsApp quando forem detectadas peças fora dos critérios de conformidade.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📁</span>
+      <div class="feature-text">
+        <h4>Rastreabilidade e histórico</h4>
+        <p>Registrar cada inspeção com timestamp, máquina, resultado e imagem, criando histórico auditável.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📉</span>
+      <div class="feature-text">
+        <h4>Redução de falhas manuais</h4>
+        <p>Eliminar a subjetividade e a inconsistência entre operadores e turnos na classificação de qualidade.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📋</span>
+      <div class="feature-text">
+        <h4>Relatórios operacionais</h4>
+        <p>Consolidar dados por turno, período e máquina em dashboards e resumos automáticos enviados ao final do dia.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📈</span>
+      <div class="feature-text">
+        <h4>Base para evolução</h4>
+        <p>Criar fundação de dados para melhoria contínua do processo produtivo, com histórico de imagens e classificações.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FLUXO OPERACIONAL ══════════════════════════════ -->
+<section>
+  <div class="section-label">03 — Como Funciona</div>
+  <h2>Fluxo Operacional do Sistema</h2>
+
+  <p>O sistema opera de forma contínua durante os turnos de produção. Abaixo, o fluxo completo desde a captura da imagem até a geração de relatórios:</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-icon">📷<span class="flow-num">1</span></div>
+      <div class="flow-label">Captura</div>
+      <div class="flow-desc">Câmera registra a peça logo após a produção</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">📡<span class="flow-num">2</span></div>
+      <div class="flow-label">Envio</div>
+      <div class="flow-desc">Imagem transferida ao servidor (local ou nuvem)</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">🧠<span class="flow-num">3</span></div>
+      <div class="flow-label">Análise IA</div>
+      <div class="flow-desc">Motor de visão computacional processa a imagem</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">🏷️<span class="flow-num">4</span></div>
+      <div class="flow-label">Classificação</div>
+      <div class="flow-desc">Resultado: boa, ruim ou não identificada</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">💾<span class="flow-num">5</span></div>
+      <div class="flow-label">Registro</div>
+      <div class="flow-desc">Dados salvos em banco com timestamp e imagem</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">🔔<span class="flow-num">6</span></div>
+      <div class="flow-label">Alerta</div>
+      <div class="flow-desc">WhatsApp notifica em caso de não conformidade</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">📊<span class="flow-num">7</span></div>
+      <div class="flow-label">Relatório</div>
+      <div class="flow-desc">Dashboard e resumo diário por turno e período</div>
+    </div>
+  </div>
+
+  <p>A seguir, um exemplo de dados reais de um turno, conforme informado pelo cliente. Este formato servirá como referência para o design do dashboard e dos relatórios:</p>
+
+  <div class="data-sample">
+    <div class="ds-title">◆ Exemplo de Dados de Turno — Referência Operacional</div>
+    <div class="data-row"><span class="data-key">Máquina</span><span class="data-val">Máquina 4 - Poyatos</span></div>
+    <div class="data-row"><span class="data-key">Início do turno</span><span class="data-val">10/03/2026 — 06:00:00 BRT</span></div>
+    <div class="data-row"><span class="data-key">Duração do turno</span><span class="data-val">13 horas</span></div>
+    <div class="data-row"><span class="data-key">Primeira placa inspecionada</span><span class="data-val">06:37:46</span></div>
+    <div class="data-row"><span class="data-key">Última placa inspecionada</span><span class="data-val">16:47:40</span></div>
+    <div class="data-row"><span class="data-key">Total de placas criadas</span><span class="data-val">976</span></div>
+    <div class="data-row"><span class="data-key">Placas boas</span><span class="data-val good">944</span></div>
+    <div class="data-row"><span class="data-key">Placas ruins</span><span class="data-val bad">10</span></div>
+    <div class="data-row"><span class="data-key">Não identificadas</span><span class="data-val warn">22</span></div>
+    <div class="data-row"><span class="data-key">Eficiência</span><span class="data-val">1,25 placa(s) / minuto</span></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FUNCIONALIDADES ══════════════════════════════ -->
+<section>
+  <div class="section-label">04 — Escopo Funcional</div>
+  <h2>Funcionalidades Previstas</h2>
+
+  <p>O sistema contempla as seguintes funcionalidades, distribuídas ao longo das fases do projeto:</p>
+
+  <div class="feature-grid">
+    <div class="feature-item"><span class="feature-icon">🏭</span><div class="feature-text"><h4>Monitoramento por máquina/linha</h4><p>Identificação e acompanhamento independente por linha de produção.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">🔬</span><div class="feature-text"><h4>Classificação visual dos blocos</h4><p>Categorização automática: boa, ruim ou não identificada, com imagem associada.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">🗂️</span><div class="feature-text"><h4>Registro histórico de inspeções</h4><p>Banco de dados completo com cada inspeção, resultado, data, hora e máquina.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">📊</span><div class="feature-text"><h4>Dashboard com indicadores</h4><p>Painel web com totais, percentuais de conformidade e eficiência por turno.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">🚨</span><div class="feature-text"><h4>Alertas de não conformidade</h4><p>Notificação via WhatsApp quando peças ruins forem detectadas em sequência ou limite atingido.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">📅</span><div class="feature-text"><h4>Resumo por turno e período</h4><p>Relatório automático enviado ao final de cada turno ou no horário configurado.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">📈</span><div class="feature-text"><h4>Relatório de produtividade</h4><p>Indicadores de eficiência (peças/minuto, uptime, % conformidade) por período.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">🖼️</span><div class="feature-text"><h4>Histórico de imagens para auditoria</h4><p>Armazenamento das imagens classificadas, acessíveis para revisão posterior.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">🔎</span><div class="feature-text"><h4>Filtros por período, máquina e status</h4><p>Interface para consulta e navegação histórica dos dados de inspeção.</p></div></div>
+    <div class="feature-item"><span class="feature-icon">👁️</span><div class="feature-text"><h4>Visualização de defeitos detectados</h4><p>Galeria de exemplos de peças não conformes com destaque das regiões de problema.</p></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ ARQUITETURA ══════════════════════════════ -->
+<section>
+  <div class="section-label">05 — Infraestrutura</div>
+  <h2>Arquitetura do Sistema</h2>
+
+  <p>Um dos pontos mais relevantes desta proposta é a definição de onde o processamento ocorrerá. Existem três abordagens principais, cada uma com características distintas de custo, manutenção e resiliência. Avaliamos com cuidado as opções antes de apresentar nossa recomendação.</p>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <div class="arch-card-header local">🖥️ Opção A — Servidor Local (on-premises)</div>
+      <div class="arch-card-body">
+        <p style="font-size:12px;color:var(--ink-muted);margin-bottom:12px;">Todo o processamento ocorre no servidor já existente na fábrica. O cliente possui um servidor local, o que torna essa opção viável do ponto de vista de custo — sem mensalidade de nuvem.</p>
+        <div class="arch-pro">Menor latência — processamento imediato na rede local</div>
+        <div class="arch-pro">Sem custo recorrente de infraestrutura em nuvem</div>
+        <div class="arch-pro">Funciona de forma autônoma, mesmo sem internet</div>
+        <div class="arch-pro">Dados permanecem fisicamente na fábrica</div>
+        <div class="arch-con">Manutenção remota exige VPN ou acesso físico ao equipamento</div>
+        <div class="arch-con">Atualizações de software e do modelo dependem de acesso ao servidor</div>
+        <div class="arch-con">Sem escalabilidade automática — hardware fixo</div>
+        <div class="arch-con">Falha no servidor interrompe todo o sistema</div>
+        <div class="arch-con">Dashboard acessível somente dentro da rede local (sem exposição externa segura nativa)</div>
+      </div>
+    </div>
+
+    <div class="arch-card">
+      <div class="arch-card-header ecs">🐳 Opção B — AWS ECS + Agente Local (recomendada)</div>
+      <div class="arch-card-body">
+        <p style="font-size:12px;color:var(--ink-muted);margin-bottom:12px;">Um agente leve roda na fábrica (no servidor existente ou em um mini-PC) para capturar e enviar imagens. O processamento, banco de dados, dashboard e notificações rodam em containers Docker gerenciados pelo AWS ECS via Fargate — sem necessidade de VPN.</p>
+        <div class="arch-pro">Manutenção 100% remota via AWS Console e CLI</div>
+        <div class="arch-pro">Deploy e rollback de novas versões sem tocar no servidor da fábrica</div>
+        <div class="arch-pro">Dashboard acessível de qualquer lugar, com segurança gerenciada pela AWS</div>
+        <div class="arch-pro">Alta disponibilidade e auto-recuperação de containers</div>
+        <div class="arch-pro">Escalável para mais máquinas ou fábricas sem reconfiguração local</div>
+        <div class="arch-pro">Sem necessidade de VPN — o agente usa HTTPS padrão para enviar dados</div>
+        <div class="arch-con">Custo mensal recorrente de infraestrutura (~R$ 100–200/mês estimado)</div>
+        <div class="arch-con">Depende de conexão à internet na fábrica para sincronização</div>
+        <div class="arch-con">Latência levemente superior ao processamento puramente local</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="recommendation">
+    <h3>⭐ Recomendação: AWS ECS com Fargate + Agente Local</h3>
+    <p>Considerando a experiência da equipe técnica com containers e ECS, e a importância de manter o sistema atualizado sem deslocamentos presenciais, recomendamos a arquitetura com AWS ECS + Fargate como backend central e um agente local leve rodando no servidor da fábrica.</p>
+    <p>O agente local é responsável apenas por capturar a imagem da câmera e enviá-la ao backend via HTTPS — exatamente como qualquer aplicação web envia dados a uma API. <strong style="color:#fff;">Não há necessidade de VPN</strong>, já que não precisamos acessar a rede interna da fábrica: é o agente local que inicia a comunicação, de dentro para fora.</p>
+    <p style="margin:0;">Essa abordagem garante manutenção remota fluida, deploys controlados por CI/CD, dashboard acessível de qualquer dispositivo e base sólida para crescimento futuro — com custo mensal previsível e baixo.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Critério</th>
+          <th>On-premises (local)</th>
+          <th>AWS ECS + Agente Local ⭐</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Latência na captura e envio</td><td>⬛ Muito baixa</td><td>▫️ Baixa (HTTPS local → nuvem)</td></tr>
+        <tr><td>Manutenção remota</td><td>⬜ Requer VPN ou acesso físico</td><td>⬛ 100% remota via AWS</td></tr>
+        <tr><td>Custo recorrente</td><td>⬛ Sem custo de nuvem</td><td>▫️ ~R$ 150–250/mês (infra + APIs)</td></tr>
+        <tr><td>Deploy de atualizações</td><td>⬜ Manual / presencial</td><td>⬛ Automático via CI/CD</td></tr>
+        <tr><td>Acesso ao dashboard</td><td>⬜ Somente rede local</td><td>⬛ Qualquer dispositivo, em qualquer lugar</td></tr>
+        <tr><td>Escalabilidade</td><td>⬜ Limitada ao hardware</td><td>⬛ Elástica, sem reconfiguração local</td></tr>
+        <tr><td>Necessidade de VPN</td><td>⬛ Sim (para acesso remoto)</td><td>⬛ Não necessária</td></tr>
+        <tr><td>Resiliência a falha local</td><td>⬜ Sistema para completamente</td><td>▫️ Backend continua; agente local com buffer</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ IA / VISÃO COMPUTACIONAL ══════════════════════════════ -->
+<section>
+  <div class="section-label">06 — Inteligência Artificial</div>
+  <h2>Sobre o Modelo de Visão Computacional</h2>
+
+  <p>Visão computacional aplicada à inspeção de qualidade industrial é uma tecnologia madura e eficaz — mas que depende de condições específicas para funcionar bem. Esta seção é importante para alinhar expectativas de forma honesta e técnica.</p>
+
+  <h3>Fatores que determinam a qualidade do resultado</h3>
+
+  <div class="ai-factors">
+    <div class="ai-factor">
+      <div class="ai-factor-icon">💡</div>
+      <h4>Iluminação</h4>
+      <p>Iluminação constante e adequada é fundamental. Variações de luz entre turnos ou por posição solar afetam diretamente a precisão do modelo.</p>
+    </div>
+    <div class="ai-factor">
+      <div class="ai-factor-icon">📐</div>
+      <h4>Posicionamento da câmera</h4>
+      <p>A câmera deve ter ângulo, distância e foco padronizados. Qualquer variação na posição pode comprometer a classificação.</p>
+    </div>
+    <div class="ai-factor">
+      <div class="ai-factor-icon">🖼️</div>
+      <h4>Qualidade das imagens</h4>
+      <p>Resolução adequada, ausência de borrão e boa exposição são requisitos básicos para que o modelo funcione com confiabilidade.</p>
+    </div>
+    <div class="ai-factor">
+      <div class="ai-factor-icon">📦</div>
+      <h4>Volume de amostras</h4>
+      <p>O modelo precisará ser treinado com exemplos reais de peças boas e ruins. Quanto mais variados e rotulados, melhor a generalização.</p>
+    </div>
+    <div class="ai-factor">
+      <div class="ai-factor-icon">📋</div>
+      <h4>Critérios objetivos</h4>
+      <p>É necessário definir com clareza o que é uma peça "boa" e o que é "ruim". Critérios subjetivos dificultam o treinamento e reduzem a precisão.</p>
+    </div>
+    <div class="ai-factor">
+      <div class="ai-factor-icon">🔄</div>
+      <h4>Evolução contínua</h4>
+      <p>O modelo melhora com o tempo à medida que novos exemplos e feedback são incorporados. Um primeiro modelo raramente é o modelo final.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:28px;">Abordagem técnica prevista</h3>
+
+  <p>O modelo inicial será estruturado como uma classificação simples: <strong>conforme</strong>, <strong>não conforme</strong> ou <strong>inconclusivo</strong>. Essa abordagem binária ou de 3 classes é a mais adequada para um primeiro ciclo, pois exige um volume menor de dados para treinamento e permite validação mais rápida em campo.</p>
+
+  <p>Em fases posteriores, o modelo pode evoluir para classificação por tipo de defeito (trinca, irregularidade dimensional, textura, etc.), o que exige mais dados e rotulagem mais detalhada.</p>
+
+  <div class="warning-box">
+    <p>⚠️ <strong>Importante:</strong> Nenhum sistema de visão computacional atinge 100% de precisão em condições reais de fábrica. O objetivo é reduzir significativamente o percentual de falhas que passam despercebidas, não eliminar completamente a necessidade de supervisão humana em casos limítrofes. A faixa de classificações "não identificadas" é esperada e será gerenciada ao longo do projeto.</p>
+  </div>
+
+  <h3>Etapas do desenvolvimento do modelo</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Etapa</th><th>Atividade</th><th>Responsabilidade</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1. Coleta</td><td>Captura de imagens de peças boas e ruins em condições reais</td><td>Equipe técnica + cliente</td></tr>
+        <tr><td>2. Rotulagem</td><td>Classificação manual das imagens com apoio do cliente (quem conhece os defeitos)</td><td>Cliente (com suporte)</td></tr>
+        <tr><td>3. Treinamento</td><td>Treinar o modelo inicial com o conjunto de dados coletado</td><td>Equipe técnica</td></tr>
+        <tr><td>4. Validação</td><td>Testar o modelo em ambiente real e medir precisão, recall e falsos positivos</td><td>Equipe técnica + cliente</td></tr>
+        <tr><td>5. Ajuste</td><td>Corrigir erros, adicionar exemplos e retreinar conforme necessário</td><td>Equipe técnica</td></tr>
+        <tr><td>6. Evolução</td><td>Ciclo contínuo de melhoria com novos dados operacionais</td><td>Suporte evolutivo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ PREMISSAS ══════════════════════════════ -->
+<section>
+  <div class="section-label">07 — Dependências</div>
+  <h2>Premissas e Dependências</h2>
+
+  <p>O sucesso do projeto depende do cumprimento de um conjunto de premissas. Itens que estiverem fora dessas condições deverão ser tratados como escopo adicional ou risco gerenciado.</p>
+
+  <ul class="premissa-list">
+    <li>Disponibilidade de câmera(s) compatível(is) com os pontos de captura definidos</li>
+    <li>Acesso físico ou remoto ao ponto de instalação da câmera na linha de produção</li>
+    <li>Definição clara e documentada dos critérios de conformidade (o que é bom/ruim)</li>
+    <li>Disponibilidade do cliente para rotular amostras reais de imagens</li>
+    <li>Acesso ao servidor local existente na fábrica (especificações técnicas a confirmar)</li>
+    <li>Conectividade de rede estável na fábrica, caso a arquitetura híbrida seja adotada</li>
+    <li>Definição dos contatos (números de WhatsApp) para recebimento de alertas e relatórios</li>
+    <li>Iluminação adequada e constante no ponto de captura das imagens</li>
+    <li>Período de homologação em ambiente real antes da liberação definitiva do sistema</li>
+    <li>Participação do cliente nas revisões de fase e validações de resultado</li>
+    <li>Fornecimento de acesso VPN ou outro método de acesso remoto ao ambiente</li>
+    <li>Ausência de restrições legais ou contratuais ao uso de imagens das peças para treinamento</li>
+  </ul>
+
+  <div class="highlight-box" style="margin-top:24px;">
+    <p>Alterações significativas nessas premissas durante o projeto poderão impactar prazo, custo e escopo, e serão tratadas com aditivo ou comunicação formal entre as partes.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FASES ══════════════════════════════ -->
+<section>
+  <div class="section-label">08 — Plano de Execução</div>
+  <h2>Escopo por Fases</h2>
+
+  <p>O projeto é estruturado em fases progressivas e validadas. Cada fase tem entregáveis definidos e um ponto de aprovação antes do início da próxima. Isso garante controle de risco e visibilidade para ambas as partes.</p>
+
+  <div style="margin-top:36px;">
+
+    <div class="phase">
+      <div class="phase-line"></div>
+      <div class="phase-left"><div class="phase-badge">1</div></div>
+      <div class="phase-content">
+        <h3>Descoberta Técnica e Levantamento</h3>
+        <span class="phase-duration">Semana 1</span>
+        <ul class="deliverables">
+          <li>Reunião de alinhamento e mapeamento detalhado do processo produtivo</li>
+          <li>Visita técnica (presencial ou remota) ao ambiente de instalação</li>
+          <li>Avaliação das câmeras disponíveis e ponto de captura ideal</li>
+          <li>Avaliação do servidor local existente (hardware, sistema operacional, conectividade)</li>
+          <li>Definição da arquitetura final (local, nuvem ou híbrida)</li>
+          <li>Coleta inicial de imagens de referência (boas e ruins)</li>
+          <li>Documento de escopo refinado e aceite formal de premissas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-line"></div>
+      <div class="phase-left"><div class="phase-badge">2</div></div>
+      <div class="phase-content">
+        <h3>Prova de Conceito (MVP)</h3>
+        <span class="phase-duration">Semanas 1–2</span>
+        <ul class="deliverables">
+          <li>Infraestrutura básica configurada (servidor local + ambiente AWS, se híbrido)</li>
+          <li>Pipeline de captura de imagem → envio → processamento funcionando</li>
+          <li>Primeiro modelo de classificação treinado com amostras iniciais</li>
+          <li>Classificação básica: boa / ruim / não identificada</li>
+          <li>Registro em banco de dados com timestamp e metadados</li>
+          <li>Protótipo de página de resultados (visualização simples)</li>
+          <li>Validação em campo com acompanhamento conjunto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-line"></div>
+      <div class="phase-left"><div class="phase-badge">3</div></div>
+      <div class="phase-content">
+        <h3>Dashboard, Alertas e Relatórios</h3>
+        <span class="phase-duration">Semanas 2–3</span>
+        <ul class="deliverables">
+          <li>Dashboard web completo com indicadores de turno e produtividade</li>
+          <li>Integração com WhatsApp para alertas de não conformidade em tempo real</li>
+          <li>Resumo automático diário enviado ao final do turno</li>
+          <li>Relatório de produtividade com filtros por período, máquina e status</li>
+          <li>Histórico de imagens com navegação e busca</li>
+          <li>Galeria de exemplos de defeitos detectados</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-line"></div>
+      <div class="phase-left"><div class="phase-badge">4</div></div>
+      <div class="phase-content">
+        <h3>Ajustes Finos, Validação e Implantação</h3>
+        <span class="phase-duration">Semanas 3–4</span>
+        <ul class="deliverables">
+          <li>Retreinamento do modelo com novos exemplos coletados em campo</li>
+          <li>Calibração de thresholds de alerta conforme feedback operacional</li>
+          <li>Testes de carga e estabilidade em ambiente de produção</li>
+          <li>Documentação técnica e manual operacional básico</li>
+          <li>Treinamento remoto da equipe operacional</li>
+          <li>Liberação oficial do sistema para uso continuado</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-left"><div class="phase-badge" style="background:var(--ink-muted);">5</div></div>
+      <div class="phase-content">
+        <h3>Suporte Evolutivo (opcional, contratação separada)</h3>
+        <span class="phase-duration">Mensal — conforme contrato</span>
+        <ul class="deliverables">
+          <li>Manutenção preventiva da infraestrutura e do modelo</li>
+          <li>Retreinamento periódico com novos dados</li>
+          <li>Evolução de funcionalidades conforme demanda</li>
+          <li>Suporte técnico por canal definido (e-mail, WhatsApp ou ticket)</li>
+          <li>Monitoramento de disponibilidade e alertas de sistema</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════ FORA DO ESCOPO ══════════════════════════════ -->
+<section>
+  <div class="section-label">09 — Limites do Escopo</div>
+  <h2>Itens Fora do Escopo</h2>
+
+  <p>Para garantir clareza e evitar expectativas não alinhadas, os itens abaixo não estão incluídos nesta proposta, salvo contratação específica:</p>
+
+  <div class="oos-list">
+    <div class="oos-item">Desenvolvimento, aquisição ou instalação física de hardware industrial (câmeras, suportes, iluminação industrial)</div>
+    <div class="oos-item">Garantia de precisão de 100% na classificação — este compromisso não é tecnicamente viável em nenhum sistema de IA</div>
+    <div class="oos-item">Manutenção física de câmeras e equipamentos de captura na fábrica</div>
+    <div class="oos-item">Projeto ou infraestrutura de rede local (cabeamento, switches, Wi-Fi industrial)</div>
+    <div class="oos-item">Integração com sistemas legados da fábrica não informados nesta proposta (ERP, MES, etc.)</div>
+    <div class="oos-item">Escalabilidade para múltiplas unidades fabris sem nova estimativa de escopo e custo</div>
+    <div class="oos-item">Treinamento operacional presencial recorrente (salvo contratação específica)</div>
+    <div class="oos-item">Adequação a normas técnicas específicas de certificação (ISO, ABNT) não solicitadas</div>
+    <div class="oos-item">Desenvolvimento de aplicativo mobile nativo (iOS/Android)</div>
+    <div class="oos-item">Manutenção ou suporte ao ambiente de nuvem AWS além do configurado pelo projeto</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ RISCOS ══════════════════════════════ -->
+<section>
+  <div class="section-label">10 — Gestão de Risco</div>
+  <h2>Riscos do Projeto</h2>
+
+  <p>Identificamos os principais riscos e suas mitigações previstas. Transparência sobre riscos é parte do nosso compromisso com a condução responsável do projeto.</p>
+
+  <ul class="risk-list">
+
+    <div class="risk-item">
+      <span class="risk-badge high">Alto</span>
+      <div class="risk-text">
+        <h4>Qualidade insuficiente das imagens capturadas</h4>
+        <p>Iluminação inadequada, câmera de baixa resolução ou posição instável podem comprometer severamente o modelo. Mitigação: avaliação detalhada do ambiente na Fase 1, antes do treinamento.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge high">Alto</span>
+      <div class="risk-text">
+        <h4>Critérios subjetivos de conformidade</h4>
+        <p>Se a definição de "peça boa" variar entre operadores, o modelo não consegue aprender padrão consistente. Mitigação: sessão de alinhamento e documentação formal dos critérios com o cliente na Fase 1.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge med">Médio</span>
+      <div class="risk-text">
+        <h4>Variações de iluminação, poeira ou posição durante a operação</h4>
+        <p>Mudanças nas condições de captura após o treinamento podem reduzir a precisão. Mitigação: retreinamento periódico e monitoramento da taxa de "não identificados" como indicador de degradação.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge med">Médio</span>
+      <div class="risk-text">
+        <h4>Volume insuficiente de amostras de defeitos</h4>
+        <p>Peças defeituosas são raras por natureza, o que pode dificultar o treinamento. Mitigação: uso de técnicas de data augmentation e coleta ativa durante o período de operação do MVP.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge med">Médio</span>
+      <div class="risk-text">
+        <h4>Instabilidade de conectividade na fábrica</h4>
+        <p>Quedas de internet impactariam o envio de dados para a nuvem em arquitetura híbrida. Mitigação: buffer local para armazenamento temporário e sincronização quando a conexão for restabelecida.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge low">Baixo</span>
+      <div class="risk-text">
+        <h4>Servidor local com recursos insuficientes</h4>
+        <p>O hardware existente pode não suportar a carga do modelo de inferência. Mitigação: avaliação técnica do servidor na Fase 1; se necessário, processamento migrado integralmente para a nuvem.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <span class="risk-badge low">Baixo</span>
+      <div class="risk-text">
+        <h4>Necessidade de ajustes após o início da operação real</h4>
+        <p>É esperado que o sistema precise de calibrações após a operação em produção. Mitigação: a Fase 4 é dedicada a isso, e o suporte evolutivo cobre ajustes contínuos.</p>
+      </div>
+    </div>
+
+  </ul>
+</section>
+
+<!-- ══════════════════════════════ BENEFÍCIOS ══════════════════════════════ -->
+<section>
+  <div class="section-label">11 — Valor Gerado</div>
+  <h2>Benefícios Esperados</h2>
+
+  <p>Com a implantação bem-sucedida do sistema, a operação da fábrica se beneficia de:</p>
+
+  <div class="benefit-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon">🎯</div>
+      <h4>Padronização da qualidade</h4>
+      <p>Critério de inspeção uniforme, independente de turno ou operador.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">⚡</div>
+      <h4>Resposta rápida a falhas</h4>
+      <p>Alertas em tempo real permitem ação imediata antes de produzir mais peças com defeito.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🗃️</div>
+      <h4>Histórico auditável</h4>
+      <p>Cada inspeção registrada com imagem, data, hora e resultado para consulta futura.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🔧</div>
+      <h4>Redução de retrabalho</h4>
+      <p>Identificação precoce de defeitos reduz o custo de correção e o desperdício de material.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📊</div>
+      <h4>Indicadores de produção</h4>
+      <p>Dados concretos de eficiência, conformidade e produtividade por turno e período.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🚀</div>
+      <h4>Base para crescimento</h4>
+      <p>Plataforma escalável que pode evoluir para mais linhas, defeitos e integrações.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ CRONOGRAMA ══════════════════════════════ -->
+<section>
+  <div class="section-label">12 — Cronograma</div>
+  <h2>Cronograma Estimado</h2>
+
+  <div class="warning-box">
+    <p>⚠️ As estimativas abaixo são <strong>preliminares</strong> e serão refinadas após o levantamento técnico da Fase 1. Fatores como complexidade do ambiente de instalação, velocidade de coleta de amostras e disponibilidade do cliente para validações podem impactar os prazos.</p>
+  </div>
+
+  <div style="margin-top:28px;border:1px solid var(--paper-dark);border-radius:var(--radius-lg);overflow:hidden;">
+    <div style="background:var(--accent);color:#fff;padding:14px 20px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;">Cronograma por Fase — Estimativa Inicial</div>
+    <div style="padding:24px 28px;">
+      <div class="schedule-row">
+        <div class="schedule-phase-name">Fase 1 — Descoberta</div>
+        <div><div class="schedule-bar-wrap"><div class="schedule-bar" style="width:25%"></div></div></div>
+        <div class="schedule-duration">Semana 1</div>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-phase-name">Fase 2 — MVP</div>
+        <div><div class="schedule-bar-wrap"><div class="schedule-bar" style="width:50%"></div></div></div>
+        <div class="schedule-duration">Semanas 1–2</div>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-phase-name">Fase 3 — Dashboard & Alertas</div>
+        <div><div class="schedule-bar-wrap"><div class="schedule-bar" style="width:75%"></div></div></div>
+        <div class="schedule-duration">Semanas 2–3</div>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-phase-name">Fase 4 — Validação & Deploy</div>
+        <div><div class="schedule-bar-wrap"><div class="schedule-bar" style="width:100%"></div></div></div>
+        <div class="schedule-duration">Semanas 3–4</div>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-phase-name">Fase 5 — Suporte (opcional)</div>
+        <div><div class="schedule-bar-wrap"><div class="schedule-bar" style="width:100%;background:linear-gradient(to right, var(--ink-muted), var(--paper-dark));"></div></div></div>
+        <div class="schedule-duration">Contínuo</div>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--rule);display:flex;justify-content:space-between;font-size:12px;">
+        <span style="color:var(--ink-muted);">Prazo total estimado (Fases 1–4):</span>
+        <span style="font-weight:600;color:var(--accent);">4 semanas (~1 mês)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ INVESTIMENTO ══════════════════════════════ -->
+<section>
+  <div class="section-label">13 — Investimento</div>
+  <h2>Estrutura de Investimento</h2>
+
+  <p>A proposta é estruturada em três categorias: desenvolvimento do sistema, suporte evolutivo opcional e infraestrutura de terceiros. Os valores abaixo são estimativas iniciais, sujeitas ao refinamento após o levantamento técnico da Fase 1.</p>
+
+  <div class="invest-cards">
+    <div class="invest-card">
+      <div class="invest-card-top">
+        <h4>🛠️ Implantação — Fases 1 a 4</h4>
+        <p style="font-size:11.5px;color:var(--ink-muted);margin-top:4px;">Desenvolvimento completo, incluindo descoberta, MVP, dashboard, alertas, validação e implantação.</p>
+      </div>
+      <div class="invest-card-body">
+        <div class="invest-amount">R$ 16.000</div>
+        <div class="invest-note">Pagamento na entrega do projeto</div>
+      </div>
+    </div>
+
+    <div class="invest-card">
+      <div class="invest-card-top">
+        <h4>🔄 Suporte Evolutivo Mensal</h4>
+        <p style="font-size:11.5px;color:var(--ink-muted);margin-top:4px;">Manutenção, retreinamento do modelo, novas funcionalidades e suporte técnico contínuo.</p>
+      </div>
+      <div class="invest-card-body">
+        <div class="invest-amount">R$ 300<span style="font-size:14px;color:var(--ink-muted)">/mês</span></div>
+        <div class="invest-note">Contratação opcional<br>Mínimo de 6 meses recomendado</div>
+      </div>
+    </div>
+
+    <div class="invest-card">
+      <div class="invest-card-top">
+        <h4>☁️ Infraestrutura de Terceiros</h4>
+        <p style="font-size:11.5px;color:var(--ink-muted);margin-top:4px;">Custos de AWS ECS/Fargate, S3, banco de dados e WhatsApp API — pagos diretamente pelo cliente.</p>
+      </div>
+      <div class="invest-card-body">
+        <div class="invest-amount">~R$ 150–250<span style="font-size:14px;color:var(--ink-muted)">/mês</span></div>
+        <div class="invest-note">AWS Fargate + RDS + S3: ~R$ 80–150<br>WhatsApp API (Z-API/Twilio): ~R$ 50–100</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:20px;">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Tipo</th><th>Responsável pelo pagamento</th><th>Observação</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Desenvolvimento do sistema (Fases 1–4)</td><td>Desenvolvimento</td><td>Cliente</td><td>Total R$ 16.000 — pagamento na entrega do projeto</td></tr>
+        <tr><td>AWS ECS/Fargate + RDS + S3</td><td>Infraestrutura</td><td>Cliente</td><td>~R$ 80–150/mês estimado</td></tr>
+        <tr><td>WhatsApp Business API (Z-API ou similar)</td><td>Infraestrutura</td><td>Cliente</td><td>~R$ 50–100/mês conforme provedor</td></tr>
+        <tr><td>Câmera(s) e acessórios</td><td>Hardware</td><td>Cliente</td><td>Não incluso no desenvolvimento</td></tr>
+        <tr><td>Suporte evolutivo mensal (Fase 5)</td><td>Serviço</td><td>Cliente</td><td>R$ 300/mês — opcional, contrato separado</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    <p>Os valores de desenvolvimento são para o sistema de software. Hardware (câmeras, suportes, iluminação) e infraestrutura de terceiros (AWS ECS, WhatsApp API) são custos adicionais, pagos diretamente pelo cliente aos respectivos fornecedores. A Galtec auxilia na escolha, configuração e provisionamento, mas não é revendedora de hardware ou serviços de nuvem.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ CONDIÇÕES COMERCIAIS ══════════════════════════════ -->
+<section>
+  <div class="section-label">14 — Termos Comerciais</div>
+  <h2>Condições Comerciais</h2>
+
+  <div class="conditions-grid">
+    <div class="condition-item">
+      <span class="condition-label">Validade da proposta</span>
+      <span class="condition-value">30 dias corridos a partir de 24/03/2025</span>
+    </div>
+    <div class="condition-item">
+      <span class="condition-label">Forma de pagamento</span>
+      <span class="condition-value">Pagamento integral na entrega do projeto (Fases 1–4 concluídas)</span>
+    </div>
+    <div class="condition-item">
+      <span class="condition-label">Prazo estimado de início</span>
+      <span class="condition-value">7 dias úteis após assinatura do contrato</span>
+    </div>
+    <div class="condition-item">
+      <span class="condition-label">Moeda e reajuste</span>
+      <span class="condition-value">Reais (BRL). Suporte mensal reajustado anualmente pelo IGPM</span>
+    </div>
+    <div class="condition-item">
+      <span class="condition-label">Mudanças de escopo</span>
+      <span class="condition-value">Tratadas via aditivo formal com nova estimativa de custo e prazo</span>
+    </div>
+    <div class="condition-item">
+      <span class="condition-label">Propriedade do código</span>
+      <span class="condition-value">Transferência total ao cliente após quitação integral</span>
+    </div>
+  </div>
+
+  <div class="warning-box" style="margin-top:24px;">
+    <p>⚠️ <strong>Sobre mudanças de escopo:</strong> Qualquer funcionalidade, integração ou ajuste não descrito nesta proposta será avaliado separadamente. Mudanças de escopo solicitadas durante o projeto serão formalizadas por escrito antes da execução, garantindo transparência para ambas as partes.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ PRÓXIMOS PASSOS ══════════════════════════════ -->
+<section>
+  <div class="section-label">15 — Ação</div>
+  <h2>Próximos Passos</h2>
+
+  <p>Se esta proposta fizer sentido para o seu negócio, o caminho para o início do projeto é simples e bem definido:</p>
+
+  <ol class="steps-list">
+    <li>
+      <div class="step-content">
+        <h4>Reunião de alinhamento e esclarecimento de dúvidas</h4>
+        <p>Uma conversa de 60–90 minutos para revisar esta proposta, tirar dúvidas técnicas e comerciais e alinhar expectativas de ambos os lados.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <h4>Visita técnica ou sessão de descoberta remota</h4>
+        <p>Avaliação do ambiente físico de instalação (câmera, iluminação, servidor), mapeamento do ponto de captura ideal e análise preliminar das condições de operação.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <h4>Assinatura do contrato e abertura formal do projeto</h4>
+        <p>Formalização do escopo, cronograma e condições acordadas, com definição de canal de comunicação e responsáveis de cada lado.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <h4>Coleta inicial de imagens e definição dos critérios de conformidade</h4>
+        <p>Sessão estruturada com o cliente para documentar o que é uma peça "boa" e uma peça "ruim", com captura de exemplos reais para início do dataset de treinamento.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <h4>Início da Fase 1 — Descoberta Técnica</h4>
+        <p>Kickoff formal do projeto com definição final da arquitetura, cronograma detalhado e entregáveis acordados para cada etapa.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-logo">Galtec</div>
+  <div class="footer-tagline">Tecnologia aplicada com método, responsabilidade e evolução contínua.</div>
+
+  <div class="footer-divider"></div>
+
+  <p class="footer-closing">"Bons sistemas não nascem prontos — crescem com dados reais, feedback honesto e compromisso de longo prazo entre cliente e equipe técnica."</p>
+
+  <div class="footer-divider"></div>
+
+  <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:20px;">
+    <div class="footer-contact">juliocsreis@gmail.com</div>
+    <div class="footer-contact">+55 (15) 99795-2161</div>
+    <div class="footer-contact">Sorocaba / SP</div>
+  </div>
+
+  <div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:16px;">
+    Proposta confidencial • Ref. [PROPOSTA-VC-001] • Emitida em 24 de março de 2025 • Válida por 30 dias
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
