@@ -224,7 +224,6 @@
         section {
             padding: 72px 72px;
             border-bottom: 1px solid var(--rule);
-            scroll-margin-top: 68px;
         }
 
         section:last-child {
@@ -240,51 +239,67 @@
             margin-bottom: 10px;
         }
 
-        /* ── ÍNDICE (navegação) ── */
+        /* ── ÍNDICE (sidebar direita) ── */
         .proposal-index {
-            position: sticky;
-            top: 3px;
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
             z-index: 998;
-            margin: 0;
-            padding: 12px 72px 14px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px 18px 20px 20px;
             background: var(--paper);
-            border-bottom: 1px solid var(--rule);
-            box-shadow: 0 8px 24px -14px rgba(15, 20, 32, 0.12);
+            border: 1px solid var(--rule);
+            border-right: none;
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+            box-shadow: -4px 0 24px -10px rgba(15, 20, 32, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .proposal-index.is-visible {
+            opacity: 1;
+            visibility: visible;
         }
 
         .proposal-index__label {
             display: block;
             font-family: 'DM Mono', monospace;
-            font-size: 9px;
+            font-size: 8px;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--accent-mid);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            white-space: nowrap;
         }
 
         .proposal-index__list {
             list-style: none;
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px 8px;
+            flex-direction: column;
+            gap: 2px;
             margin: 0;
             padding: 0;
         }
 
         .proposal-index__list a {
-            font-size: 11.5px;
-            color: var(--ink-light);
+            display: block;
+            font-size: 11px;
+            line-height: 1.3;
+            color: var(--ink-muted);
             text-decoration: none;
-            padding: 5px 9px;
+            padding: 4px 10px;
             border-radius: var(--radius);
-            border: 1px solid transparent;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
             transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
         }
 
         .proposal-index__list a:hover {
             color: var(--accent);
             background: var(--accent-glow);
-            border-color: rgba(45, 95, 168, 0.12);
         }
 
         .proposal-index__list a:focus-visible {
@@ -295,8 +310,12 @@
         .proposal-index__list a.is-active {
             color: var(--accent);
             font-weight: 600;
+            border-left-color: var(--accent-mid);
             background: var(--accent-glow);
-            border-color: rgba(45, 95, 168, 0.2);
+        }
+
+        .index-toggle {
+            display: none;
         }
 
         h2 {
@@ -1327,10 +1346,9 @@
                 display: none !important;
             }
 
-            .proposal-index {
-                position: static;
-                box-shadow: none;
-                break-inside: avoid;
+            .proposal-index,
+            .index-toggle {
+                display: none !important;
             }
 
             .js-reveal {
@@ -1350,7 +1368,69 @@
             }
 
             .proposal-index {
-                padding: 10px 32px 12px;
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                transform: none;
+                max-height: 50vh;
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+                border: 1px solid var(--rule);
+                border-bottom: none;
+                box-shadow: 0 -4px 24px -10px rgba(15, 20, 32, 0.15);
+                padding: 16px 24px 20px;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .proposal-index.is-open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .proposal-index__list a {
+                white-space: normal;
+            }
+
+            .index-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                bottom: 22px;
+                left: 22px;
+                width: 40px;
+                height: 40px;
+                border-radius: var(--radius);
+                border: 1px solid var(--paper-dark);
+                background: var(--paper);
+                color: var(--accent);
+                font-size: 16px;
+                cursor: pointer;
+                z-index: 999;
+                box-shadow: var(--shadow-sm);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(8px);
+                transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease,
+                    background 0.2s ease, border-color 0.2s ease;
+            }
+
+            .index-toggle:hover {
+                background: var(--paper-warm);
+                border-color: var(--accent-mid);
+            }
+
+            .index-toggle:focus-visible {
+                outline: 2px solid var(--accent-mid);
+                outline-offset: 2px;
+            }
+
+            .index-toggle.is-visible {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
             }
 
             .cover-title {
@@ -1439,27 +1519,6 @@
                 </div>
             </div>
         </div>
-
-        <nav class="proposal-index" aria-label="Índice da proposta">
-            <span class="proposal-index__label">Índice</span>
-            <ul class="proposal-index__list" role="list">
-                <li><a href="#sec-01">01 Visão geral</a></li>
-                <li><a href="#sec-02">02 Propósito</a></li>
-                <li><a href="#sec-03">03 Como funciona</a></li>
-                <li><a href="#sec-04">04 Escopo funcional</a></li>
-                <li><a href="#sec-05">05 Infraestrutura</a></li>
-                <li><a href="#sec-06">06 Inteligência artificial</a></li>
-                <li><a href="#sec-07">07 Dependências</a></li>
-                <li><a href="#sec-08">08 Plano de execução</a></li>
-                <li><a href="#sec-09">09 Limites do escopo</a></li>
-                <li><a href="#sec-10">10 Gestão de risco</a></li>
-                <li><a href="#sec-11">11 Valor gerado</a></li>
-                <li><a href="#sec-12">12 Cronograma</a></li>
-                <li><a href="#sec-13">13 Investimento</a></li>
-                <li><a href="#sec-14">14 Termos comerciais</a></li>
-                <li><a href="#sec-15">15 Próximos passos</a></li>
-            </ul>
-        </nav>
 
         <!-- ══════════════════════════════ RESUMO EXECUTIVO ══════════════════════════════ -->
         <section id="sec-01" class="js-reveal">
@@ -2527,13 +2586,39 @@
 
         <button type="button" class="to-top" id="to-top" aria-label="Voltar ao topo" hidden>↑</button>
     </div>
+
+    <nav class="proposal-index" id="proposal-index" aria-label="Índice da proposta">
+        <span class="proposal-index__label">Índice</span>
+        <ul class="proposal-index__list" role="list">
+            <li><a href="#sec-01">01 Visão geral</a></li>
+            <li><a href="#sec-02">02 Propósito</a></li>
+            <li><a href="#sec-03">03 Como funciona</a></li>
+            <li><a href="#sec-04">04 Escopo funcional</a></li>
+            <li><a href="#sec-05">05 Infraestrutura</a></li>
+            <li><a href="#sec-06">06 Inteligência artificial</a></li>
+            <li><a href="#sec-07">07 Dependências</a></li>
+            <li><a href="#sec-08">08 Plano de execução</a></li>
+            <li><a href="#sec-09">09 Limites do escopo</a></li>
+            <li><a href="#sec-10">10 Gestão de risco</a></li>
+            <li><a href="#sec-11">11 Valor gerado</a></li>
+            <li><a href="#sec-12">12 Cronograma</a></li>
+            <li><a href="#sec-13">13 Investimento</a></li>
+            <li><a href="#sec-14">14 Termos comerciais</a></li>
+            <li><a href="#sec-15">15 Próximos passos</a></li>
+        </ul>
+    </nav>
+    <button type="button" class="index-toggle" id="index-toggle" aria-label="Abrir índice" hidden>☰</button>
+
     <script>
         (function () {
             var bar = document.querySelector('.doc-progress__bar');
             var progressRoot = document.querySelector('.doc-progress');
             var toTop = document.getElementById('to-top');
+            var indexNav = document.getElementById('proposal-index');
+            var indexToggle = document.getElementById('index-toggle');
             var reveals = document.querySelectorAll('.js-reveal');
             var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var isMobile = function () { return window.innerWidth <= 700; };
 
             function readingProgress() {
                 var el = document.documentElement;
@@ -2550,6 +2635,28 @@
                 var show = window.scrollY > window.innerHeight * 0.45;
                 toTop.hidden = !show;
                 toTop.classList.toggle('is-visible', show);
+            }
+
+            function toggleIndex() {
+                var pastCover = window.scrollY > window.innerHeight * 0.7;
+                if (isMobile()) {
+                    indexNav.classList.remove('is-visible');
+                    indexToggle.hidden = !pastCover;
+                    indexToggle.classList.toggle('is-visible', pastCover);
+                } else {
+                    indexToggle.hidden = true;
+                    indexToggle.classList.remove('is-visible');
+                    indexNav.classList.remove('is-open');
+                    indexNav.classList.toggle('is-visible', pastCover);
+                }
+            }
+
+            if (indexToggle) {
+                indexToggle.addEventListener('click', function () {
+                    var open = indexNav.classList.toggle('is-open');
+                    indexToggle.setAttribute('aria-label', open ? 'Fechar índice' : 'Abrir índice');
+                    indexToggle.textContent = open ? '✕' : '☰';
+                });
             }
 
             if (reduceMotion) {
@@ -2569,6 +2676,7 @@
                     window.requestAnimationFrame(function () {
                         readingProgress();
                         toggleToTop();
+                        toggleIndex();
                         ticking = false;
                     });
                     ticking = true;
@@ -2576,8 +2684,10 @@
             }
 
             window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', function () { toggleIndex(); }, { passive: true });
             readingProgress();
             toggleToTop();
+            toggleIndex();
 
             if (toTop) {
                 toTop.addEventListener('click', function () {
@@ -2593,10 +2703,11 @@
                     if (!target) return;
                     e.preventDefault();
                     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-                    if (history.replaceState) {
-                        history.replaceState(null, '', '#' + id);
-                    } else {
-                        location.hash = id;
+                    if (history.replaceState) history.replaceState(null, '', '#' + id);
+                    if (isMobile()) {
+                        indexNav.classList.remove('is-open');
+                        indexToggle.textContent = '☰';
+                        indexToggle.setAttribute('aria-label', 'Abrir índice');
                     }
                 });
             });
